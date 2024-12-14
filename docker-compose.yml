@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "6666:6666"
+    environment:
+      - DB_HOST=carpooling-db.mysql.database.azure.com
+      - DB_PORT=3306
+      - DB_USER=adminuser
+      - DB_PASSWORD=azerty123$$
+      - DB_NAME=carpooling
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./carpoolingMobile
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+      - "19006:19006"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.139
+    volumes:
+      - ./carpoolingMobile:/app
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+  database:
+    image: mysql:8
+    container_name: carpooling-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: azerty123$$
+      MYSQL_DATABASE: carpooling
+      MYSQL_USER: adminuser
+      MYSQL_PASSWORD: azerty123$$
