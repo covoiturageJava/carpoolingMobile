@@ -70,9 +70,9 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/location", (req, res) => {
-  const { driverId, longitude, latitude } = req.body;
+  const { driverId, longitude, latitude} = req.body;
 
-  const checkQuery = `SELECT id FROM driversessions WHERE driver_id = ?`;
+  const checkQuery = `SELECT session_id FROM driver_session WHERE driver_id = ?`;
   db.query(checkQuery, [driverId], (checkErr, results) => {
     if (checkErr) {
       res.status(500).send("Error checking session");
@@ -80,8 +80,8 @@ app.post("/location", (req, res) => {
     }
 
     if (results.length > 0) {
-      const updateQuery = `UPDATE driversessions SET longitude = ?, latitude = ? WHERE driver_id = ?`;
-      db.query(updateQuery, [longitude, latitude, driverId], (updateErr) => {
+      const updateQuery = `UPDATE driver_session SET latitude = ?, longitude = ? WHERE driver_id = ?`;
+      db.query(updateQuery, [latitude, longitude, driverId], (updateErr) => {
         if (updateErr) {
           res.status(500).send("Error updating location");
           return;
@@ -89,8 +89,8 @@ app.post("/location", (req, res) => {
         res.json({ status: "success", message: "Location updated" });
       });
     } else {
-      const insertQuery = `INSERT INTO driversessions (driver_id, longitude, latitude) VALUES (?, ?, ?)`;
-      db.query(insertQuery, [driverId, longitude, latitude], (insertErr) => {
+      const insertQuery = `INSERT INTO driver_session (driver_id, latitude, longitude, created_at, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
+      db.query(insertQuery, [driverId, latitude, longitude], (insertErr) => {
         if (insertErr) {
           res.status(500).send("Error inserting new session");
           return;
@@ -104,7 +104,7 @@ app.post("/location", (req, res) => {
 app.post("/remove-session", (req, res) => {
   const { driverId } = req.body;
 
-  const deleteQuery = `DELETE FROM driversessions WHERE driver_id = ?`;
+  const deleteQuery = `DELETE FROM driver_session WHERE driver_id = ?`;
   db.query(deleteQuery, [driverId], (deleteErr) => {
     if (deleteErr) {
       res.status(500).send("Error removing session");

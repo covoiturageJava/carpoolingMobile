@@ -7,7 +7,7 @@ import HomeView from "./src/views/HomeView";
 const Stack = createStackNavigator();
 
 // const serverIpAddress = process.env.SERVER_IP_ADDRESS;
-const serverIpAddress = "192.168.0.139";
+const serverIpAddress = "192.168.137.57";
 
 export default function App() {
   return (
